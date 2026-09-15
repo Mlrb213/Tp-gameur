@@ -1,12 +1,12 @@
 <template>
     <div class="card bg-base-100 w-auto p-5 shadow-sm">
-        <figure class="pt-10 flex flex-col relative">
-            <button v-for="monster in props.team" class="btn btn-outline absolute left-0 top-10 z-10 h-11 py-1 rounded-[5px] overflow-hidden flex flex-col gap-0"  @click="switchMonster(monster)" v-if="props.type !== 'enemie'">
+        <figure class="pt-10 flex flex-col relative gap-2">
+            <button v-for="monster in props.team" class="btn btn-outline h-11 py-1 rounded-[5px] overflow-hidden flex flex-col gap-0" :class="{ 'btn-active': monster.idMonster === activeMonster?.idMonster, 'opacity-40 pointer-events-none': monster.currentHp <= 0 }" @click="switchMonster(monster)" v-if="props.type !== 'enemie'">
                 <div class="flex items-center gap-1 h-full">
-                    <img :src="props.spriteFront" alt="" class="h-7 w-auto shrink-0"/>
-                    <p>{{ props.nameMonster }}</p>
+                    <img :src="monster.spriteFront" alt="" class="h-7 w-auto shrink-0"/>
+                    <p>{{ monster.nameMonster }}</p>
                 </div>
-                <progress class="progress progress-success" :class="bareColor" :value="props.currentHp" :max="props.maxHp"></progress>
+                <progress class="progress progress-success" :class="barColor" :value="monster.currentHp" :max="monster.maxHp"></progress>
             </button>
             <img style="height: 280px;"
             :src="imgFront"
@@ -63,14 +63,14 @@ const imgFront = computed(() => {
     return 'https://png.pngtree.com/png-vector/20260329/ourmid/pngtree-pixel-art-tombstone-with-rip-text-png-image_19017781.webp'
 })
 
-function BarColor(monster: Monster) {
+function barColor(monster: Monster) {
     const pourcentage = (monster.currentHp / monster.maxHp) * 100;
     if (pourcentage <= 20) return 'progress-error';
     if (pourcentage <= 50) return 'progress-warning';
     return 'progress-success';
 }
 
-const bareColorActiveMonster = computed(() => activeMonster.value ? BarColor(activeMonster.value) : 'progress-success');
+const bareColorActiveMonster = computed(() => activeMonster.value ? barColor(activeMonster.value) : 'progress-success');
 </script>
 
 <style scoped lang="css">

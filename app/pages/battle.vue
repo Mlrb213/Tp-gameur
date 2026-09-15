@@ -15,13 +15,8 @@
       <div class="flex flex-col gap-3">
         <!-- Monstre Adversaire -->
         <HealhtBar
-          :id-monster="String(enemyMonster.idMonster)"
-          :name-monster="enemyMonster.nameMonster"
-          :spriteFront="enemyMonster.spriteFront"
-          :spriteBack="enemyMonster.spriteBack"
-          :current-hp="enemyMonster.currentHp"
-          :max-hp="enemyMonster.maxHp"
-          :type="enemyMonster.type"
+          :team="[enemyMonster]"
+          type="enemie"
         />
 
         <!-- Joueur -->
