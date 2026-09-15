@@ -11,11 +11,11 @@ export const skills = {
         idSkills: 2,
         nameSkills: 'specialAttack',
         type: 'specialAttack',
-        amount: 20,
+        amount: 35,
         coolDown: 3
     },
     heal:{
-        idSkills: 20,
+        idSkills: 3,
         nameSkills: 'heal',
         type: 'heal',
         amount: 50,
@@ -23,12 +23,17 @@ export const skills = {
         maxCharge: 2 
     },
     shield:{
-        idSkills:20,
+        idSkills: 4,
         nameSkills: 'shield',
         type: 'shield',
         amount: 20,
         coolDown: 2
+    },
+    luck:{
+        idSkills: 5,
+        nameSkills: 'luck',
+        type: 'luck',
+        amount: 10,
+        coolDown: 0
     }
-  
-
 } satisfies Record<string, Rawskills>;

@@ -1,4 +1,4 @@
-export type SkillType = 'basicAttack' | 'specialAttack' | 'heal' | 'shield';
+export type SkillType = 'basicAttack' | 'specialAttack' | 'heal' | 'shield' | 'luck';
 
 
 export interface Rawskills {

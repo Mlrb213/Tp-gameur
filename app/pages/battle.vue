@@ -111,22 +111,12 @@ const enemyMonster = reactive(new Monster({
   defense: monsters[1]?.defense ?? 8
 }))
 
-// Instances des compétences issues de la classe Skill
-const skillAttack = reactive(new Skill(skills.find(s => s.type === 'attaque') || {
-  idSkills: 1, nameSkills: 'Attaque', type: 'attaque', amount: 15
-}))
-
-const skillSpecial = reactive(new Skill(skills.find(s => s.type === 'special') || {
-  idSkills: 2, nameSkills: 'Attaque Spéciale', type: 'special', amount: 35, coolDown: 3
-}))
-
-const skillHeal = reactive(new Skill(skills.find(s => s.type === 'heal') || {
-  idSkills: 3, nameSkills: 'Soin', type: 'heal', amount: 25
-}))
-
-const skillShield = reactive(new Skill(skills.find(s => s.type === 'shield') || {
-  idSkills: 4, nameSkills: 'Bouclier', type: 'shield', amount: 20
-}))
+// Instances des compétences issues de l'objet skills de l'équipe
+const skillAttack = reactive(new Skill(skills.basicAttack))
+const skillSpecial = reactive(new Skill(skills.SpecialAttack))
+const skillHeal = reactive(new Skill(skills.heal))
+const skillShield = reactive(new Skill(skills.shield))
+const skillLuck = reactive(new Skill(skills.luck))
 
 // États de la Page Battle
 const currentRound = ref(1)
@@ -151,6 +141,9 @@ const addLog = (text: string, type: LogItem['type']) => {
 // Tick sur les cooldowns des compétences à la fin d'un tour
 const tickSkills = () => {
   skillSpecial.tick()
+  skillHeal.tick()
+  skillShield.tick()
+  skillLuck.tick()
 }
 
 // Riposte automatique du monstre ennemi
@@ -268,10 +261,12 @@ const executeDefense = () => {
   currentRound.value++
 }
 
-// 🎲 Luck or Not (Tirage 0 à 10)
+// 🎲 Luck or Not (Tirage 0 à 10 - Compétence skillLuck)
 const executeLuck = () => {
   if (isGameOver.value) return
+  if (!skillLuck.canUse()) return
 
+  skillLuck.use()
   const roll = Math.floor(Math.random() * 11)
 
   if (roll === 0) {
