@@ -1,6 +1,5 @@
-
 <template>
   <div>
-    <Test></Test>
+    <EndGame></EndGame>
   </div>
 </template>
