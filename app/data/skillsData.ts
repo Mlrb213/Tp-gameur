@@ -35,5 +35,12 @@ export const skills = {
         type: 'luck',
         amount: 10,
         coolDown: 0
+    },
+    kamehameha:{
+        idSkills: 6,
+        nameSkills: 'kamehameha',
+        type: 'cheat',
+        amount:10000,
+        maxCharge : 1
     }
 } satisfies Record<string, Rawskills>;
