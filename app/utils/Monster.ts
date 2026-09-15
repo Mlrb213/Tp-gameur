@@ -1,3 +1,4 @@
+import { randomInt } from "../utils/utils";
 export interface RawMonster {
     idMonster: number;
     nameMonster: string;
@@ -26,6 +27,18 @@ export class Monster {
         this.attack= data.attack,
         this.defense= data.defense
     }
+
+    computeNormalDamage  (target: Monster):number {
+
+        const damage = this.attack - target.defense
+        return damage
+    }
+    computeUltimateDamage  (target: Monster):number {
+
+        const damage = this.attack *2 - target.defense
+        return damage
+    }
+    
 }
 
  
