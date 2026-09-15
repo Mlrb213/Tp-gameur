@@ -32,8 +32,22 @@
         />
 
         <div class="card bg-base-100 w-auto p-5 shadow-sm">
-          <label for="comment" class="label mb-2">Laisser un commentaire :</label>
-          <input type="text" id="comment" placeholder="Ici commentaire" class="input">
+          <form @submit.prevent="addComment">
+              <label for="comment" class="label mb-2">Laisser un commentaire :</label>
+              <input 
+                v-model="newComment"
+                @keydown="onKey"
+                type="text"
+                id="comment"
+                placeholder="Ici commentaire" 
+                class="input">
+              <button class='btn btn-primary'>Commenter</button>
+          </form>
+          <div id="commentaire" class="mt-4 flex flex-col gap-2">
+            <p v-for="(c, i) in comments" :key="i" class="p-2 bg-base-200 rounded">
+              {{ c }}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -83,10 +97,27 @@
       />
     </main>
   </div>
+  <div
+    v-if="showCheatVideo"
+    class="fixed inset-0 z-50 bg-black flex items-center justify-center"
+  >
+    <iframe
+      class="w-full h-full max-w-6xl max-h-[80vh]"
+      :src="`https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&controls=0&modestbranding=1&rel=0`"
+      allow="autoplay; encrypted-media"
+      frameborder="0"
+    />
+    <button
+      class="absolute top-4 right-4 text-white text-xl bg-red-600 px-3 py-1 rounded"
+      @click="endCheatVideo"
+    >
+      Skip ✕
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch} from 'vue'
 import { Monster } from '~/utils/Monster'
 import { Skill } from '~/utils/competence'
 import { monsters } from '~/data/monsterData'
@@ -98,7 +129,7 @@ import HealhtBar from '~/components/HealhtBar.vue'
 // -------------------------------------------------------------
 // 1. Initialisation du Combat à partir des Classes & Data
 // -------------------------------------------------------------
-const playerMonster = reactive(new Monster({
+const playerMonster :Monster = reactive(new Monster({
   idMonster: monsters[0]?.idMonster ?? 0,
   nameMonster: monsters[0]?.nameMonster ?? 'Bulbizarre',
   sprite: monsters[0]?.sprite ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.png',
@@ -108,7 +139,7 @@ const playerMonster = reactive(new Monster({
   defense: monsters[0]?.defense ?? 10
 }))
 
-const enemyMonster = reactive(new Monster({
+const enemyMonster : Monster = reactive(new Monster({
   idMonster: monsters[1]?.idMonster ?? 1,
   nameMonster: monsters[1]?.nameMonster ?? 'Roucool',
   sprite: monsters[1]?.sprite ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/16.png',
@@ -323,9 +354,80 @@ const restartBattle = () => {
   skillHeal.currentCoolDown = 0
   skillShield.currentCoolDown = 0
   skillLuck.currentCoolDown = 0
+  skillHeal.currentCharges = skillHeal.maxCharge
+  KamehamehaAttack.currentCharges = KamehamehaAttack.maxCharge
+  KamehamehaAttack.currentCoolDown = 0
+  cheatActive.value = false
+  code.value = ''
   logs.value = []
   addLog(`⚔️ Combat réinitialisé. Bonne chance !`, 'system')
 }
+// commentaire
+const newComment = ref('')
+const comments = ref<string[]>([])
+const lastKey = ref('')
+const code = ref('')
+const konamiCode = 'ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft ArrowRight b a'
+
+function addComment(){
+  const text = newComment.value.trim()
+  if(!text) return 
+  comments.value.push(text)
+  newComment.value =''
+  code.value =''
+}
+
+// shuuut c'est secret
+
+const cheatActive = ref(false)
+
+function onKey(e:KeyboardEvent){
+  if (e.key.startsWith('Arrow')) e.preventDefault()
+  lastKey.value = e.key
+  code.value = (code.value + ' ' + e.key).trimStart().slice(-konamiCode.length)
+}
+const KamehamehaAttack = reactive(new Skill(skills.kamehameha))
+const executeKamehameha = () => {
+  if (isGameOver.value) return
+  if (!KamehamehaAttack.canUse()) return
+
+  KamehamehaAttack.use()
+  const damage = KamehamehaAttack.amount
+  enemyMonster.currentHp = Math.max(0, enemyMonster.currentHp - damage)
+  addLog(`⚔️ ${playerMonster.nameMonster} utilise ${KamehamehaAttack.nameSkills} et inflige ${damage} dégâts.`, 'attack')
+
+  if (enemyMonster.currentHp > 0) {
+    enemyTurn()
+  } else {
+    winner.value = 'player'
+    addLog(`🏆 Victoire ! ${enemyMonster.nameMonster} est K.O. !`, 'system')
+  }
+
+  tickSkills()
+  currentRound.value++
+}
+
+const VIDEO_ID = 'k-_kW0G5iSY'
+const VIDEO_DURATION_MS = 12000     // durée de la vidéo en millisecondes
+const showCheatVideo = ref(false)
+let cheatTimer: ReturnType<typeof setTimeout> | null = null
+
+function endCheatVideo() {
+  showCheatVideo.value = false
+  if (cheatTimer) clearTimeout(cheatTimer)
+  cheatTimer = null
+  executeKamehameha()
+}
+
+watch(code, (newVal) => {
+  if (newVal === konamiCode) {
+    cheatActive.value = true
+    showCheatVideo.value = true
+    cheatTimer = setTimeout(endCheatVideo, VIDEO_DURATION_MS)
+    code.value = ''
+  }
+})
+
 </script>
 
 <style>
