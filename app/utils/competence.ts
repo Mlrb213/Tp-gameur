@@ -28,24 +28,26 @@ export class Skill {
         this.amount=data.amount;
         this.maxCharge= data.maxCharge??Infinity ; 
         this.coolDown=data.coolDown?? 0;
-        this.currentCharges= this.maxCharge 
-        this.currentCoolDown= 0
+        this.currentCharges= this.maxCharge ;
+        this.currentCoolDown= this.coolDown ; // Initialisé au cooldown (ex: 2 pour l'ultime)
         
     }
     
     canUse():boolean{
-        return this.currentCharges >0 && this.currentCoolDown === 0;
-      
+        return this.currentCharges > 0 && this.currentCoolDown === 0;
     }
+
     use():boolean{
-        if(!this.canUse()) return false
-        if(this.maxCharge!== Infinity) this.currentCharges --
-        
-        this.currentCoolDown = this.coolDown
-        return true
+        if(!this.canUse()) return false;
+        if(this.maxCharge !== Infinity) this.currentCharges--;
+        this.currentCoolDown = this.coolDown; // Réinitialisé au cooldown lors de l'utilisation
+        return true;
     }
 
     tick():void{
-        if(this.currentCoolDown >0) this.currentCoolDown --
+        if(this.currentCoolDown > 0) {
+            this.currentCoolDown--;
+        }
+        // Dès que currentCoolDown atteint 0, il reste à 0 tant qu'il n'est pas utilisé !
     }
 }
