@@ -1,4 +1,4 @@
-export type SkillType = 'attaque' | 'special' | 'heal' | 'shield';
+export type SkillType = 'basicAttack' | 'specialAttack' | 'heal' | 'shield';
 
 
 export interface Rawskills {
@@ -29,18 +29,18 @@ export class Skill {
         this.maxCharge= data.maxCharge??Infinity ; 
         this.coolDown=data.coolDown?? 0;
         this.currentCharges= this.maxCharge 
-        this.currentCoolDown= this.coolDown
+        this.currentCoolDown= 0
         
     }
     
     canUse():boolean{
-        return this.currentCharges >0 || this.currentCoolDown === 0;
+        return this.currentCharges >0 && this.currentCoolDown === 0;
       
     }
     use():boolean{
         if(!this.canUse()) return false
         if(this.maxCharge!== Infinity) this.currentCharges --
-        this.currentCoolDown --
+        
         this.currentCoolDown = this.coolDown
         return true
     }

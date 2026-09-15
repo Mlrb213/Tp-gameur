@@ -1,29 +1,34 @@
-import { Skill } from "~/utils/competence";
+import type { Rawskills } from "../utils/competence"
 
-export const skills: Skill[] = [
-  new Skill({
-    idSkills: 1,
-    nameSkills: 'Attaque',
-    type: 'attaque',
-    amount: 15,
-  }),
-  new Skill({
-    idSkills: 2,
-    nameSkills: 'Attaque Spéciale',
-    type: 'special',
-    amount: 35,
-    coolDown: 3,
-  }),
-  new Skill({
-    idSkills: 3,
-    nameSkills: 'Soin',
-    type: 'heal',
-    amount: 25,
-  }),
-  new Skill({
-    idSkills: 4,
-    nameSkills: 'Bouclier / Défense',
-    type: 'shield',
-    amount: 20,
-  }),
-];
+export const skills = {
+    basicAttack:{
+        idSkills: 1, 
+        nameSkills: 'basicAttack',
+        type: 'basicAttack',
+        amount: 20
+    },
+    SpecialAttack:{
+        idSkills: 2,
+        nameSkills: 'specialAttack',
+        type: 'specialAttack',
+        amount: 20,
+        coolDown: 3
+    },
+    heal:{
+        idSkills: 20,
+        nameSkills: 'heal',
+        type: 'heal',
+        amount: 50,
+        coolDown: 2,
+        maxCharge: 2 
+    },
+    shield:{
+        idSkills:20,
+        nameSkills: 'shield',
+        type: 'shield',
+        amount: 20,
+        coolDown: 2
+    }
+  
+
+} satisfies Record<string, Rawskills>;
