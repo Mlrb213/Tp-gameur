@@ -44,6 +44,8 @@
         :player-hp="playerMonster.currentHp"
         :player-max-hp="playerMonster.maxHp"
         :is-defending="isDefending"
+        :is-special-ready="skillSpecial.canUse()"
+        :special-cooldown="skillSpecial.currentCoolDown"
         @attack="executeAttack"
         @attack-spe="executeSpecialAttack"
         @heal="executeHeal"
@@ -207,12 +209,12 @@ const executeAttack = () => {
   currentRound.value++
 }
 
-// ⚡ Attaque Spéciale
+// ⚡ Attaque Spéciale (Ultime disponible tous les 2 tours et reste si non utilisée)
 const executeSpecialAttack = () => {
-  if (isGameOver.value || currentRound.value % 3 !== 0) return
+  if (isGameOver.value) return
   if (!skillSpecial.canUse()) return
 
-  skillSpecial.use()
+  skillSpecial.use() // Réinitialise currentCoolDown = coolDown (2)
   const damage = Math.max(1, playerMonster.computeUltimateDamage(enemyMonster))
   enemyMonster.currentHp = Math.max(0, enemyMonster.currentHp - damage)
   addLog(`⚡ ATTAQUE SPÉCIALE ! ${playerMonster.nameMonster} inflige ${damage} dégâts critiques !`, 'attack-spe')
@@ -312,6 +314,10 @@ const restartBattle = () => {
   currentRound.value = 1
   isDefending.value = false
   winner.value = null
+  skillSpecial.currentCoolDown = 0
+  skillHeal.currentCoolDown = 0
+  skillShield.currentCoolDown = 0
+  skillLuck.currentCoolDown = 0
   logs.value = []
   addLog(`⚔️ Combat réinitialisé. Bonne chance !`, 'system')
 }
