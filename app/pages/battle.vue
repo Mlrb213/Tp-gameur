@@ -12,7 +12,7 @@
 
     <main class="w-full max-w-2xl flex flex-col gap-6">
       <!-- 1. Affichage des Barres de Vie & Monstres (Composant HealhtBar de Kletera) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-3">
         <!-- Monstre Adversaire -->
         <HealhtBar
           :id-monster="String(enemyMonster.idMonster)"
@@ -30,6 +30,11 @@
           :current-hp="playerMonster.currentHp"
           :max-hp="playerMonster.maxHp"
         />
+
+        <div class="card bg-base-100 w-auto p-5 shadow-sm">
+          <label for="comment" class="label mb-2">Laisser un commentaire :</label>
+          <input type="text" id="comment" placeholder="Ici commentaire" class="input">
+        </div>
       </div>
 
       <!-- Statut du Bouclier -->
@@ -44,6 +49,8 @@
         :player-hp="playerMonster.currentHp"
         :player-max-hp="playerMonster.maxHp"
         :is-defending="isDefending"
+        :is-special-ready="skillSpecial.canUse()"
+        :special-cooldown="skillSpecial.currentCoolDown"
         @attack="executeAttack"
         @attack-spe="executeSpecialAttack"
         @heal="executeHeal"
@@ -94,7 +101,7 @@ import HealhtBar from '~/components/HealhtBar.vue'
 const playerMonster = reactive(new Monster({
   idMonster: monsters[0]?.idMonster ?? 0,
   nameMonster: monsters[0]?.nameMonster ?? 'Bulbizarre',
-  sprite: monsters[0]?.sprite ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/16.png',
+  sprite: monsters[0]?.sprite ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.png',
   currentHp: monsters[0]?.currentHp ?? 100,
   maxHp: monsters[0]?.maxHp ?? 100,
   attack: monsters[0]?.attack ?? 20,
@@ -104,7 +111,7 @@ const playerMonster = reactive(new Monster({
 const enemyMonster = reactive(new Monster({
   idMonster: monsters[1]?.idMonster ?? 1,
   nameMonster: monsters[1]?.nameMonster ?? 'Roucool',
-  sprite: monsters[1]?.sprite ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.png',
+  sprite: monsters[1]?.sprite ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/16.png',
   currentHp: monsters[1]?.currentHp ?? 100,
   maxHp: monsters[1]?.maxHp ?? 100,
   attack: monsters[1]?.attack ?? 18,
@@ -207,12 +214,12 @@ const executeAttack = () => {
   currentRound.value++
 }
 
-// ⚡ Attaque Spéciale
+// ⚡ Attaque Spéciale (Ultime disponible tous les 2 tours et reste si non utilisée)
 const executeSpecialAttack = () => {
-  if (isGameOver.value || currentRound.value % 3 !== 0) return
+  if (isGameOver.value) return
   if (!skillSpecial.canUse()) return
 
-  skillSpecial.use()
+  skillSpecial.use() // Réinitialise currentCoolDown = coolDown (2)
   const damage = Math.max(1, playerMonster.computeUltimateDamage(enemyMonster))
   enemyMonster.currentHp = Math.max(0, enemyMonster.currentHp - damage)
   addLog(`⚡ ATTAQUE SPÉCIALE ! ${playerMonster.nameMonster} inflige ${damage} dégâts critiques !`, 'attack-spe')
@@ -312,6 +319,10 @@ const restartBattle = () => {
   currentRound.value = 1
   isDefending.value = false
   winner.value = null
+  skillSpecial.currentCoolDown = 0
+  skillHeal.currentCoolDown = 0
+  skillShield.currentCoolDown = 0
+  skillLuck.currentCoolDown = 0
   logs.value = []
   addLog(`⚔️ Combat réinitialisé. Bonne chance !`, 'system')
 }

@@ -10,7 +10,7 @@
       </div>
 
       <div v-if="canUseSpecial" class="text-[10px] bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded font-bold animate-pulse">
-        ⚡ ATK SPÉ PRÊTE
+        ⚡ ATK SPÉ PRÊTE !
       </div>
       <div v-else class="text-[10px] text-stone-400 font-bold">
         ATK SPÉ : <span class="text-amber-600 font-bold">{{ roundsUntilSpecial }}</span> TOUR(S)
@@ -47,7 +47,7 @@
         </span>
       </button>
 
-      <!-- 2. Attaque Spéciale -->
+      <!-- 2. Attaque Spéciale (Ultime disponible tous les 2 tours et reste si non utilisée) -->
       <button
         id="btn-attack-spe"
         type="button"
@@ -211,18 +211,28 @@ const props = defineProps({
   isDefending: {
     type: Boolean,
     default: false
+  },
+  isSpecialReady: {
+    type: Boolean,
+    default: undefined
+  },
+  specialCooldown: {
+    type: Number,
+    default: 0
   }
 })
 
 defineEmits(['attack', 'attack-spe', 'heal', 'defense', 'give-up', 'luck'])
 
 const canUseSpecial = computed(() => {
-  return props.currentRound > 0 && props.currentRound % 3 === 0
+  if (props.isSpecialReady !== undefined) {
+    return props.isSpecialReady
+  }
+  return props.currentRound > 0 && props.currentRound % 2 === 0
 })
 
 const roundsUntilSpecial = computed(() => {
-  const remainder = props.currentRound % 3
-  return remainder === 0 ? 0 : 3 - remainder
+  return props.specialCooldown
 })
 
 const isMaxHp = computed(() => {

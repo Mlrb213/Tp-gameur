@@ -12,7 +12,7 @@ export const skills = {
         nameSkills: 'specialAttack',
         type: 'specialAttack',
         amount: 35,
-        coolDown: 3
+        coolDown: 2
     },
     heal:{
         idSkills: 3,
