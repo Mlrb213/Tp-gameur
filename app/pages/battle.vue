@@ -44,6 +44,8 @@
         :player-hp="playerMonster.currentHp"
         :player-max-hp="playerMonster.maxHp"
         :is-defending="isDefending"
+        :is-special-ready="skillSpecial.canUse()"
+        :special-cooldown="skillSpecial.currentCoolDown"
         @attack="executeAttack"
         @attack-spe="executeSpecialAttack"
         @heal="executeHeal"
@@ -111,22 +113,12 @@ const enemyMonster = reactive(new Monster({
   defense: monsters[1]?.defense ?? 8
 }))
 
-// Instances des compétences issues de la classe Skill
-const skillAttack = reactive(new Skill(skills.find(s => s.type === 'attaque') || {
-  idSkills: 1, nameSkills: 'Attaque', type: 'attaque', amount: 15
-}))
-
-const skillSpecial = reactive(new Skill(skills.find(s => s.type === 'special') || {
-  idSkills: 2, nameSkills: 'Attaque Spéciale', type: 'special', amount: 35, coolDown: 3
-}))
-
-const skillHeal = reactive(new Skill(skills.find(s => s.type === 'heal') || {
-  idSkills: 3, nameSkills: 'Soin', type: 'heal', amount: 25
-}))
-
-const skillShield = reactive(new Skill(skills.find(s => s.type === 'shield') || {
-  idSkills: 4, nameSkills: 'Bouclier', type: 'shield', amount: 20
-}))
+// Instances des compétences issues de l'objet skills de l'équipe
+const skillAttack = reactive(new Skill(skills.basicAttack))
+const skillSpecial = reactive(new Skill(skills.SpecialAttack))
+const skillHeal = reactive(new Skill(skills.heal))
+const skillShield = reactive(new Skill(skills.shield))
+const skillLuck = reactive(new Skill(skills.luck))
 
 // États de la Page Battle
 const currentRound = ref(1)
@@ -151,6 +143,9 @@ const addLog = (text: string, type: LogItem['type']) => {
 // Tick sur les cooldowns des compétences à la fin d'un tour
 const tickSkills = () => {
   skillSpecial.tick()
+  skillHeal.tick()
+  skillShield.tick()
+  skillLuck.tick()
 }
 
 // Riposte automatique du monstre ennemi
@@ -214,12 +209,12 @@ const executeAttack = () => {
   currentRound.value++
 }
 
-// ⚡ Attaque Spéciale
+// ⚡ Attaque Spéciale (Ultime disponible tous les 2 tours et reste si non utilisée)
 const executeSpecialAttack = () => {
-  if (isGameOver.value || currentRound.value % 3 !== 0) return
+  if (isGameOver.value) return
   if (!skillSpecial.canUse()) return
 
-  skillSpecial.use()
+  skillSpecial.use() // Réinitialise currentCoolDown = coolDown (2)
   const damage = Math.max(1, playerMonster.computeUltimateDamage(enemyMonster))
   enemyMonster.currentHp = Math.max(0, enemyMonster.currentHp - damage)
   addLog(`⚡ ATTAQUE SPÉCIALE ! ${playerMonster.nameMonster} inflige ${damage} dégâts critiques !`, 'attack-spe')
@@ -271,7 +266,9 @@ const executeDefense = () => {
 // 🎲 Luck or Not (Tirage 0 à 10)
 const executeLuck = () => {
   if (isGameOver.value) return
+  if (!skillLuck.canUse()) return
 
+  skillLuck.use()
   const roll = Math.floor(Math.random() * 11)
 
   if (roll === 0) {
@@ -317,6 +314,10 @@ const restartBattle = () => {
   currentRound.value = 1
   isDefending.value = false
   winner.value = null
+  skillSpecial.currentCoolDown = 0
+  skillHeal.currentCoolDown = 0
+  skillShield.currentCoolDown = 0
+  skillLuck.currentCoolDown = 0
   logs.value = []
   addLog(`⚔️ Combat réinitialisé. Bonne chance !`, 'system')
 }
