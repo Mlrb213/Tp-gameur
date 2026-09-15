@@ -17,18 +17,18 @@
         <HealhtBar
           :id-monster="String(enemyMonster.idMonster)"
           :name-monster="enemyMonster.nameMonster"
-          :sprite="enemyMonster.sprite"
+          :spriteFront="enemyMonster.spriteFront"
+          :spriteBack="enemyMonster.spriteBack"
           :current-hp="enemyMonster.currentHp"
           :max-hp="enemyMonster.maxHp"
+          :type="enemyMonster.type"
         />
 
         <!-- Joueur -->
         <HealhtBar
-          :id-monster="String(playerMonster.idMonster)"
-          :name-monster="playerMonster.nameMonster"
-          :sprite="playerMonster.sprite"
-          :current-hp="playerMonster.currentHp"
-          :max-hp="playerMonster.maxHp"
+          :team="[playerMonster, playerMonster2, playerMonster3]"
+          type="allier"
+          v-model:active-id="activePlayerMonsterId"
         />
 
         <div class="card bg-base-100 w-auto p-5 shadow-sm">
@@ -99,22 +99,51 @@ import HealhtBar from '~/components/HealhtBar.vue'
 const playerMonster = reactive(new Monster({
   idMonster: monsters[0]?.idMonster ?? 0,
   nameMonster: monsters[0]?.nameMonster ?? 'Bulbizarre',
-  sprite: monsters[0]?.sprite ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.png',
+  spriteFront: monsters[0]?.spriteFront ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
+  spriteBack: monsters[0]?.spriteBack ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.png',
   currentHp: monsters[0]?.currentHp ?? 100,
   maxHp: monsters[0]?.maxHp ?? 100,
   attack: monsters[0]?.attack ?? 20,
-  defense: monsters[0]?.defense ?? 10
+  defense: monsters[0]?.defense ?? 10,
+  type: monsters[0]?.type ?? "allier"
 }))
 
 const enemyMonster = reactive(new Monster({
   idMonster: monsters[1]?.idMonster ?? 1,
   nameMonster: monsters[1]?.nameMonster ?? 'Roucool',
-  sprite: monsters[1]?.sprite ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/16.png',
+  spriteFront: monsters[1]?.spriteFront ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/16.png',
+  spriteBack: monsters[0]?.spriteBack ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/16.png',
   currentHp: monsters[1]?.currentHp ?? 100,
   maxHp: monsters[1]?.maxHp ?? 100,
   attack: monsters[1]?.attack ?? 18,
-  defense: monsters[1]?.defense ?? 8
+  defense: monsters[1]?.defense ?? 8,
+  type: monsters[1]?.type ?? "enemie"
 }))
+
+const playerMonster2 = reactive(new Monster({
+  idMonster: monsters[2]?.idMonster ?? 0,
+  nameMonster: monsters[2]?.nameMonster ?? 'Poke3',
+  spriteFront: monsters[2]?.spriteFront ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
+  spriteBack: monsters[2]?.spriteBack ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/4.png',
+  currentHp: monsters[2]?.currentHp ?? 100,
+  maxHp: monsters[2]?.maxHp ?? 100,
+  attack: monsters[2]?.attack ?? 20,
+  defense: monsters[2]?.defense ?? 10,
+  type: monsters[2]?.type ?? "allier"
+}))
+const playerMonster3 = reactive(new Monster({
+  idMonster: monsters[3]?.idMonster ?? 0,
+  nameMonster: monsters[3]?.nameMonster ?? 'Poke4',
+  spriteFront: monsters[3]?.spriteFront ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png',
+  spriteBack: monsters[3]?.spriteBack ?? 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/7.png',
+  currentHp: monsters[3]?.currentHp ?? 100,
+  maxHp: monsters[3]?.maxHp ?? 100,
+  attack: monsters[3]?.attack ?? 20,
+  defense: monsters[3]?.defense ?? 10,
+  type: monsters[3]?.type ?? "allier"
+}))
+
+const activePlayerMonsterId = ref(playerMonster.idMonster)
 
 // Instances des compétences issues de la classe Skill
 const skillAttack = reactive(new Skill(skills.find(s => s.type === 'attaque') || {
