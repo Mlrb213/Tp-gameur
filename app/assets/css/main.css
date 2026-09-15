@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 @import "tailwindcss";
+@plugin "daisyui";
 
 .font-pixel {
   font-family: 'Press Start 2P', monospace, sans-serif;
