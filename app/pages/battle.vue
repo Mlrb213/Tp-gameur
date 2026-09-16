@@ -138,7 +138,7 @@ const playerMonster3 = reactive(new Monster({
   type: monsters[3]?.type ?? "allier"
 }))
 
-const activePlayerMonsterId = ref(playerMonster.idMonster)
+const activePlayerMonsterId = playerMonster.idMonster;
 
 // Instances des compétences issues de la classe Skill
 const skillAttack = reactive(new Skill(skills.find(s => s.type === 'attaque') || {

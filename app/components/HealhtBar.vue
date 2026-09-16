@@ -1,13 +1,15 @@
 <template>
     <div class="card bg-base-100 w-auto p-5 shadow-sm">
         <figure class="pt-10 flex flex-col relative gap-2">
-            <button v-for="monster in props.team" class="btn btn-outline h-11 py-1 rounded-[5px] overflow-hidden flex flex-col gap-0" :class="{ 'btn-active': monster.idMonster === activeMonster?.idMonster, 'opacity-40 pointer-events-none': monster.currentHp <= 0 }" @click="switchMonster(monster)" v-if="props.type !== 'enemie'">
-                <div class="flex items-center gap-1 h-full">
-                    <img :src="monster.spriteFront" alt="" class="h-7 w-auto shrink-0"/>
-                    <p>{{ monster.nameMonster }}</p>
-                </div>
-                <progress class="progress progress-success" :class="barColor" :value="monster.currentHp" :max="monster.maxHp"></progress>
-            </button>
+            <div class="absolute top-10 left-0">
+                <button v-for="monster in props.team" class="btn btn-outline h-11 py-1 rounded-[5px] overflow-hidden flex flex-col mb-2" :class="{ 'btn-active': monster.idMonster === activeMonster?.idMonster, 'opacity-40 pointer-events-none': monster.currentHp <= 0}" @click="switchMonster(monster)" v-if="props.type !== 'enemie'">
+                    <div class="flex items-center gap-1 h-full">
+                        <img :src="monster.spriteFront" alt="" class="h-7 w-auto shrink-0"/>
+                        <p>{{ monster.nameMonster }}</p>
+                    </div>
+                    <progress class="progress progress-success" :class="barColor" :value="monster.currentHp" :max="monster.maxHp"></progress>
+                </button>
+            </div>
             <img style="height: 280px;"
             :src="imgFront"
             :alt="activeMonster?.nameMonster"
@@ -21,8 +23,10 @@
 <script setup lang='ts'>
 import { computed } from 'vue'
 
+let compteur=0;
+
 interface Monster {
-    idMonster: string,
+    idMonster: number,
     nameMonster: string,
     spriteFront: string,
     spriteBack: string,
@@ -34,11 +38,11 @@ interface Monster {
 const props = defineProps<{
     team: Monster[],
     type: string,
-    activeId?: string,
+    activeId?: number,
 }>();
 
 const emit = defineEmits<{
-    (e: 'update:activeId', id: string): void
+    (e: 'update:activeId', id: number): void
 }>();
 
 // Monstre actif : celui passé en v-model, sinon le premier vivant de l'équipe
